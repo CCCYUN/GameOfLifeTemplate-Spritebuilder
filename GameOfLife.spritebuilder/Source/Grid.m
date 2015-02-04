@@ -2,8 +2,8 @@
 //  Grid.m
 //  GameOfLife
 //
-//  Created by Benjamin Encz on 31/01/14.
-//  Copyright (c) 2014 MakeGamesWithUs inc. Free to use for all purposes.
+//  Created by Yun on 2/3/15.
+//  Copyright (c) 2015 Apportable. All rights reserved.
 //
 
 #import "Grid.h"
@@ -19,8 +19,6 @@ static const int GRID_COLUMNS = 10;
     float _cellHeight;
 }
 
-#pragma mark - Lifecycle
-
 - (void)onEnter
 {
     [super onEnter];
@@ -30,8 +28,6 @@ static const int GRID_COLUMNS = 10;
     // accept touches on the grid
     self.userInteractionEnabled = YES;
 }
-
-#pragma mark - Setup Grid
 
 - (void)setupGrid
 {
@@ -60,6 +56,11 @@ static const int GRID_COLUMNS = 10;
             // this is shorthand to access an array inside an array
             _gridArray[i][j] = creature;
             
+            // make creatures visible to test this method, remove this once we know we have filled the grid properly
+            //creature.isAlive = YES;
+            
+            
+            
             x+=_cellWidth;
         }
         
@@ -67,10 +68,7 @@ static const int GRID_COLUMNS = 10;
     }
 }
 
-
-#pragma mark - Touch Handling
-
-- (void)touchBegan:(CCTouch *)touch withEvent:(UIEvent *)event
+- (void)touchBegan:(CCTouch *)touch withEvent:(CCTouchEvent *)event
 {
     //get the x,y coordinates of the touch
     CGPoint touchLocation = [touch locationInNode:self];
@@ -81,6 +79,8 @@ static const int GRID_COLUMNS = 10;
     //invert it's state - kill it if it's alive, bring it to life if it's dead.
     creature.isAlive = !creature.isAlive;
 }
+
+
 
 - (Creature *)creatureForTouchPosition:(CGPoint)touchPosition
 {
@@ -94,20 +94,6 @@ static const int GRID_COLUMNS = 10;
     return creature;
 }
 
-#pragma mark - Util function
-
-- (BOOL)isIndexValidForX:(int)x andY:(int)y
-{
-    BOOL isIndexValid = YES;
-    if(x < 0 || y < 0 || x >= GRID_ROWS || y >= GRID_COLUMNS)
-    {
-        isIndexValid = NO;
-    }
-    return isIndexValid;
-}
-
-#pragma mark - Game Logic
-
 - (void)evolveStep {
     //update each Creature's neighbor count
     [self countNeighbors];
@@ -117,25 +103,6 @@ static const int GRID_COLUMNS = 10;
     
     //update the generation so the label's text will display the correct generation
     _generation++;
-}
-
-- (void)updateCreatures {
-    _totalAlive = 0;
-    
-    for (int i = 0; i < [_gridArray count]; i++) {
-        for (int j = 0; j < [_gridArray[i] count]; j++) {
-            Creature *currentCreature = _gridArray[i][j];
-            if (currentCreature.livingNeighbors == 3) {
-                currentCreature.isAlive = YES;
-            } else if ( (currentCreature.livingNeighbors <= 1) || (currentCreature.livingNeighbors >= 4)) {
-                currentCreature.isAlive = NO;
-            }
-            
-            if (currentCreature.isAlive) {
-                _totalAlive++;
-            }
-        }
-    }
 }
 
 
@@ -179,5 +146,38 @@ static const int GRID_COLUMNS = 10;
         }
     }
 }
+
+
+
+- (void)updateCreatures {
+    _totalAlive = 0;
+    
+    for (int i = 0; i < [_gridArray count]; i++) {
+        for (int j = 0; j < [_gridArray[i] count]; j++) {
+            Creature *currentCreature = _gridArray[i][j];
+            if (currentCreature.livingNeighbors == 3) {
+                currentCreature.isAlive = YES;
+            } else if ( (currentCreature.livingNeighbors <= 1) || (currentCreature.livingNeighbors >= 4)) {
+                currentCreature.isAlive = NO;
+            }
+            
+            if (currentCreature.isAlive) {
+                _totalAlive++;
+            }
+        }
+    }
+}
+
+- (BOOL)isIndexValidForX:(int)x andY:(int)y
+{
+    BOOL isIndexValid = YES;
+    if(x < 0 || y < 0 || x >= GRID_ROWS || y >= GRID_COLUMNS)
+    {
+        isIndexValid = NO;
+    }
+    return isIndexValid;
+}
+
+
 
 @end
